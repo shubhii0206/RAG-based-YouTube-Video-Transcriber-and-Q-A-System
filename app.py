@@ -9,7 +9,7 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 # Check if the API key is set
 if not OPENAI_API_KEY:
     raise ValueError("OPENAI_API_KEY is not set in the environment variables.")
-
+#I have used FAISS because this project only required fast, accurate retrieval of relevant transcript chunks, without needing metadata filtering or cloud persistence.
 import streamlit as st
 from youtube_transcript_api import YouTubeTranscriptApi, TranscriptsDisabled, NoTranscriptFound
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -69,11 +69,11 @@ def build_retriever(video_id):
     transcript = get_transcript_text(video_id)
     if not transcript.strip():
         return None, None
-    splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
-    chunks = splitter.create_documents([transcript])
-    embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
+    splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)#heirachial splliting, papr->sentence->word->character
+    chunks = splitter.create_documents([transcript])#each chunk is a document object with page content
+    embeddings = OpenAIEmbeddings(model="text-embedding-3-small")#1536 dimensional embeddings
     vector_store = FAISS.from_documents(chunks, embeddings)
-    retriever = vector_store.as_retriever(search_type="similarity", search_kwargs={"k": 4})
+    retriever = vector_store.as_retriever(search_type="similarity", search_kwargs={"k": 4})#retrieval based on cosine similarity between query embedding and stored chunk embeddings and return top 4 chunks
     return retriever, transcript
 
 # ========== Prompt ==========
