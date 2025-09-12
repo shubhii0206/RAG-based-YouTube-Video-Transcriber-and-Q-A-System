@@ -22,6 +22,8 @@ from pyngrok import ngrok
 import subprocess
 import time
 
+
+#document ingestion: load the data from youtube transcript into my memory
 def get_transcript_text(video_id: str) -> str:
     """
     Fetch YouTube transcript for a video in English, with fallback for auto-generated captions.
@@ -39,7 +41,7 @@ def get_transcript_text(video_id: str) -> str:
             # Fallback: auto-generated
             transcript = transcript_list.find_generated_transcript(['en', 'en-US', 'en-GB'])
 
-        transcript_data = transcript.fetch()
+        transcript_data = transcript.fetch() #download the transcript into our memory
         st.info(f"Fetched {len(transcript_data)} transcript snippets.")
 
         # Debug: show first few
